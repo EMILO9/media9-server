@@ -5,12 +5,6 @@ const objectID = require('mongodb').ObjectID
 
 app.use(express.json())
 
-app.get('/', (req, res)=> {
-  res.send('Hello World')
-})
-
-app.listen(process.env.PORT , () => { console.log("starting...") })
-
 mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 .then((client) => {
     console.log("Connected to Database");
@@ -23,3 +17,5 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
         })
     })
 })
+
+app.listen(process.env.PORT)

@@ -1,0 +1,25 @@
+{
+  "name": "media9-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EMILO9/media9-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EMILO9/media9-server/issues"
+  },
+  "homepage": "https://github.com/EMILO9/media9-server#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "engines": {
+    "node": "12.19.0"
+  }
+}

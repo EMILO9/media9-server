@@ -7,4 +7,4 @@ app.get('/', (req, res)=> {
   res.send('Hello World')
 })
 
-app.listen(3000,()=>{ console.log("starting...") })
+app.listen(process.env.PORT , () => { console.log("starting...") })

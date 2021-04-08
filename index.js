@@ -211,12 +211,6 @@ app.post('/addMedia/:pc', verifyToken, validation, upload.single('file'), (req, 
         }
       });
     })
-
-    // app.get('*', (req, res) => {
-    //   res.sendFile(__dirname, '/dist/index.html');
-    // });
-
   })
-  .catch((error) => console.error(error));
-
+  
 app.listen(process.env.PORT)

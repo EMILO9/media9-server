@@ -18,6 +18,8 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
     const users = db.collection("users");
     
     app.get('/', (req, res)=> {
-        res.send('Hello World')
+        users.find({}).toArray().then(r => {
+            res.send(r)
+        })
     })
 })

@@ -108,19 +108,19 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 
     let validationBeforeUpload = (req, res, next) => {
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
-        if (err) res.status(403).send('No access token set')
+        if (err) res.send('No access token set')
         else {
-          pcs.findOne({owner: authData.email, _id: objectID(req.body._id)}).then(r => {
-            if (!r) res.status(403).send("You don't have access to that PC.")
+          pcs.findOne({owner: authData.email, _id: objectID(req.params.id)}).then(r => {
+            if (!r) res.send("You don't have access to that PC.")
             else next()
           })
         }
     })
     }
     
-    app.post("/addMedia", customModules.verifyToken, validationBeforeUpload, upload.single('file'), (req, res) => {
+    app.post("/addMedia/:id", customModules.verifyToken, validationBeforeUpload, upload.single('file'), (req, res) => {
       pcs.updateOne(
-        { _id: objectID(req.body_id) },
+        { _id: objectID(req.params.id) },
         { $push: { media: { url: req.file.location, type: req.file.mimetype, duration: 3000, name: req.file.originalname, key: req.file.key, size: req.file.size } } }
      ).then(r => res.send(r))
     })

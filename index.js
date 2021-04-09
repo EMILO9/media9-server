@@ -133,7 +133,9 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
           .then(r => {
             if (!r) res.send("You don't have access to that PC.")
             else {
-              res.send(authData)
+              pcs.deleteOne({_id: objectID(req.params.id)}).then(r => {
+                res.send(r)
+              })
             }
           })
         }

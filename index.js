@@ -105,6 +105,19 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       })
     })
 
+
+    let validationBeforeUpload = (req, res, next) => {
+      jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
+        if (err) res.status(403).send('No access token set')
+        else {
+          pcs.findOne({owner: authData.email, _id: objectID(req.body._id)}).then(r => {
+            if (!r) res.status(403).send("You don't have access to that PC.")
+            else next()
+          })
+        }
+    })
+    }
+    
     app.post("/addMedia", customModules.verifyToken, validationBeforeUpload, upload.single('file'), (req, res) => {
       pcs.updateOne(
         { _id: objectID(req.body_id) },
@@ -115,15 +128,3 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
   })
   
 app.listen(process.env.PORT)
-
-function validationBeforeUpload (req, res, next) {
-  jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
-    if (err) res.status(403).send('No access token set')
-    else {
-      pcs.findOne({owner: authData.email, _id: objectID(req.body._id)}).then(r => {
-        if (!r) res.status(403).send("You don't have access to that PC.")
-        else next()
-      })
-    }
-})
-}

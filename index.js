@@ -6,6 +6,25 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
 const validator = require('validator');
+const AWS = require('aws-sdk')
+var multer = require('multer');
+var multerS3 = require('multer-s3')
+let s3 = new AWS.S3({accessKeyId: process.env.ACCESS_KEY_ID_AWS, secretAccessKey: process.env.SECRET_ACCESS_KEY_AWS, Bucket: process.env.BUCKET})
+var upload = multer({
+  limits: {
+    files: 1,
+    fileSize: 50 * 1024 * 1024
+  },
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.BUCKET,
+    acl: 'public-read',
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    key: function (req, file, cb) {
+      cb(null, `media_${uuidv4()}`)
+    }
+  })
+})
 const customModules = require('./customModules')
 
 app.use(express.json())
@@ -86,27 +105,11 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       })
     })
 
-    app.put("/updatePc", customModules.verifyToken, (req, res) => {
-      jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
-        if (err) res.send('No access token set')
-        else {
-          let {name, media, _id} = req.body
-          pcs.findOne({owner: authData.email, _id: objectID(_id)})
-          .then(r => {
-            if (!r) res.send("You dont have access to that PC")
-            else {
-              let nameCheck = validator.isLength(name, {min: 5, max: 40})
-              if (!nameCheck) res.send({nameCheck})
-              else {
-                pcs.replaceOne({_id: objectID(_id)}, {name, media, owner: authData.email})
-                .then(r => {
-                  res.send(r)
-                })
-              }
-            }
-          })
-        }
-      })
+    app.post("/addMedia", customModules.verifyToken, customModules.validationBeforeUpload, upload.single('file'), (req, res) => {
+      pcs.updateOne(
+        { _id: objectID(req.body_id) },
+        { $push: { media: { url: req.file.location, type: req.file.mimetype, duration: 3000, name: req.file.originalname, key: req.file.key, size: req.file.size } } }
+     ).then(r => res.send(r))
     })
 
   })

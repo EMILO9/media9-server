@@ -98,14 +98,12 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
             if (!r) res.status(400).send("You dont have access to that PC")
             else {
               pcs.deleteOne({_id: objectID(req.params.id)})
-              .then(r => {
-                res.send(r)
-                r.media.map(m => {
-                  let params = {Bucket: process.env.BUCKET, Key: m.key}
-                  s3.deleteObject(params, (err, data) => {
-                    if (err) res.status(400).send(err)
-                    });
-                })
+              .then(r => res.send(r))
+              r.media.map(m => {
+                let params = {Bucket: process.env.BUCKET, Key: m.key}
+                s3.deleteObject(params, (err, data) => {
+                  if (err) res.status(400).send(err)
+                  });
               })
             }
           })

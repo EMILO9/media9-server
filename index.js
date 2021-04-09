@@ -72,7 +72,11 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
         if (err) res.send('No access token set')
         else {
-          res.send(req.params.id)
+          pcs.findOne({owner: authData.email, _id: objectID(req.params.id)})
+          .then(r => {
+            if (!r) res.send("You dont have access to that PC")
+            else res.send(r)
+          })
         }
       })
     })

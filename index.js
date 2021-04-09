@@ -90,7 +90,21 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
         if (err) res.send('No access token set')
         else {
-          res.send(req.body)
+          pcs.findOne({owner: authData.email, _id: objectID(req.body._id)})
+          .then(r => {
+            if (!r) res.send("You dont have access to that PC")
+            else {
+              let {name, media, _id} = req.body
+              let nameCheck = validator.isLength(name, {min: 5, max: 40})
+              if (!nameCheck) res.send({nameCheck})
+              else {
+                pcs.replaceOne({_id: objectID(_id)}, {name, media})
+                .then(r => {
+                  res.send(r)
+                })
+              }
+            }
+          })
         }
       })
     })

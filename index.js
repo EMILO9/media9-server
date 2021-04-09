@@ -14,6 +14,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 .then((client) => {
     const db = client.db("db")
     const users = db.collection("users")
+    const pcs = db.collection("pcs")
 
     app.post("/register", (req, res) => {
       let {email, password} = req.body
@@ -51,10 +52,19 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       })
     })
 
-    app.get("/private", customModules.verifyToken, (req, res) => {
+    app.get("/addPc", customModules.verifyToken, (req, res) => {
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
         if (err) res.status(403).send('No access token set')
-        else res.send(authData)
+        else {
+          pcs.insertOne({
+            name: `pc_${uuidv4()}`,
+            media: [],
+            owner: authData.email
+          })
+          .then(r => {
+            res.send(r)
+          })
+        }
       })
     })
   

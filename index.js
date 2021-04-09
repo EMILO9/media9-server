@@ -16,7 +16,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 
     app.post("/register", (req, res) => {
       let {email, password} = req.body
-      users.findOne({email}).toArray()
+      users.findOne({email})
       .then(r => {
         if (r) res.send("Email is already in use")
         else {

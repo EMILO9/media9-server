@@ -41,11 +41,11 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       let {email, password} = req.body
       users.findOne({email})
       .then(r => {
-        if (r) res.send("Email is already in use")
+        if (r) res.status(400).send("Email is already in use")
         else {
           let emailCheck = validator.isEmail(email)
           let passwordCheck = validator.isLength(password, {min: 5, max: 20})
-          if (!emailCheck || !passwordCheck) res.send({emailCheck, passwordCheck})
+          if (!emailCheck || !passwordCheck) res.status(400).send({emailCheck, passwordCheck})
           else {
             bcrypt.hash(password, 8, (err, hash) => {
               users.insertOne({email: email, password: hash})
@@ -60,9 +60,9 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       let {email, password} = req.body
       users.findOne({email})
       .then(r => {
-        if (!r) res.send("Email doesnt exist")
+        if (!r) res.status(400).send("Email doesnt exist")
         else bcrypt.compare(password, r.password, (err, result) => {
-          if (!result) res.send("Wrong password")
+          if (!result) res.status(400).send("Wrong password")
           else {
             let user = {_id: r._id, email: r.email}
             jwt.sign(user, process.env.SECRET_KEY, (err, token) => {
@@ -75,7 +75,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 
     app.post("/addPc", customModules.verifyToken, (req, res) => {
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
-        if (err) res.send('No access token set')
+        if (err) res.status(400).send('No access token set')
         else {
           pcs.insertOne({
             name: `pc_${uuidv4()}`,
@@ -91,11 +91,11 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 
     app.delete("/deletePc/:id", customModules.verifyToken, (req, res) => {
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
-        if (err) res.send('No access token set')
+        if (err) res.status(400).send('No access token set')
         else {
           pcs.findOne({owner: authData.email, _id: objectID(req.params.id)})
           .then(r => {
-            if (!r) res.send("You dont have access to that PC")
+            if (!r) res.status(400).send("You dont have access to that PC")
             else {
               pcs.deleteOne({_id: objectID(req.params.id)})
               .then(r => {
@@ -110,10 +110,10 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 
     let validationBeforeUpload = (req, res, next) => {
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
-        if (err) res.send('No access token set')
+        if (err) res.status(400).send('No access token set')
         else {
           pcs.findOne({owner: authData.email, _id: objectID(req.params.id)}).then(r => {
-            if (!r) res.send("You don't have access to that PC.")
+            if (!r) res.status(400).send("You don't have access to that PC.")
             else next()
           })
         }
@@ -129,14 +129,14 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 
     app.delete("/deleteMedia/:id/:key", customModules.verifyToken, (req, res) => {
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
-        if (err) res.send('No access token set')
+        if (err) res.status(400).send('No access token set')
         else {
           pcs.findOne({owner: authData.email, _id: objectID(req.params.id)})
           .then(r => {
-            if (!r) res.send("You don't have access to that PC.")
+            if (!r) res.status(400).send("You don't have access to that PC.")
             else {
               s3.deleteObject({Bucket: process.env.BUCKET, Key: req.params.key}, function(err, data) {
-                if (err) res.send(err)
+                if (err) res.status(400).send(err)
                 else {
                    pcs.updateOne({_id: objectID(req.params.id)},
                    { $pull: { media: { key: req.params.key } } }).then(r => {
@@ -152,7 +152,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 
     app.get("/pcs", customModules.verifyToken, (req, res) => {
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
-        if (err) res.send('No access token set')
+        if (err) res.status(400).send('No access token set')
         else {
           pcs.find({owner: authData.email}).toArray()
           .then(r => {

@@ -7,7 +7,7 @@ const customModules = {
             req.token = bearerToken
             next()
         } else {
-            res.send('No access token set')
+            res.status(400).send('No access token set')
         }
     }
 }

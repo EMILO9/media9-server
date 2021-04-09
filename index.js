@@ -133,7 +133,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
           .then(r => {
             if (!r) res.send("You don't have access to that PC.")
             else {
-              pcs.updateOne({key: objectID(req.params.key)},
+              pcs.updateOne({key: objectID(req.params.id)},
               { $pull: { media: { key: req.params.key } } }).then(r => {
                 res.send(r)
               })

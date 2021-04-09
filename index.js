@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
 const validator = require('validator');
+const customModules = require('./customModules')
 
 app.use(express.json())
 
@@ -50,7 +51,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       })
     })
 
-    app.get("/private", verifyToken, (req, res) => {
+    app.get("/private", customModules.verifyToken, (req, res) => {
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
         if (err) res.status(403).send('No access token set')
         else res.send(authData)
@@ -60,15 +61,3 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
   })
   
 app.listen(process.env.PORT)
-
-function verifyToken (req, res, next) {
-  const bearerHeader = req.headers['authorization'];
-  if(typeof bearerHeader !== 'undefined') {
-    const bearer = bearerHeader.split(' ');
-    const bearerToken = bearer[1];
-    req.token = bearerToken;
-    next();
-  } else {
-    res.send('No access token set')
-  }
-}

@@ -105,7 +105,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       })
     })
 
-    app.post("/addMedia", customModules.verifyToken, customModules.validationBeforeUpload, upload.single('file'), (req, res) => {
+    app.post("/addMedia", customModules.verifyToken, validationBeforeUpload, upload.single('file'), (req, res) => {
       pcs.updateOne(
         { _id: objectID(req.body_id) },
         { $push: { media: { url: req.file.location, type: req.file.mimetype, duration: 3000, name: req.file.originalname, key: req.file.key, size: req.file.size } } }
@@ -115,3 +115,15 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
   })
   
 app.listen(process.env.PORT)
+
+function validationBeforeUpload () {
+  jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
+    if (err) res.status(403).send('No access token set')
+    else {
+      pcs.findOne({owner: authData.email, _id: objectID(req.body._id)}).then(r => {
+        if (!r) res.status(403).send("You don't have access to that PC.")
+        else next()
+      })
+    }
+})
+}

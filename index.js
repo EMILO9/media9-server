@@ -18,7 +18,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       let {email, password} = req.body
       let emailCheck = validator.isEmail(email)
       let passwordCheck = validator.isLength(password, {min: 5, max: 20})
-      res.send(emailCheck, passwordCheck)
+      res.status(200).send(emailCheck, passwordCheck)
     })
   
   })

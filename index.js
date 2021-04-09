@@ -9,6 +9,7 @@ const validator = require('validator');
 const AWS = require('aws-sdk')
 var multer = require('multer');
 var multerS3 = require('multer-s3')
+const cors = require('cors')
 let s3 = new AWS.S3({accessKeyId: process.env.ACCESS_KEY_ID, secretAccessKey: process.env.SECRET_ACCESS_KEY, Bucket: process.env.BUCKET})
 var upload = multer({
   limits: {

@@ -6,7 +6,6 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
 const validator = require('validator');
-const verifyToken = require('./verifyToken');
 
 app.use(express.json())
 
@@ -61,3 +60,15 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
   })
   
 app.listen(process.env.PORT)
+
+function verifyToken (req, res, next) {
+  const bearerHeader = req.headers['authorization'];
+  if(typeof bearerHeader !== 'undefined') {
+    const bearer = bearerHeader.split(' ');
+    const bearerToken = bearer[1];
+    req.token = bearerToken;
+    next();
+  } else {
+    res.send('No access token set')
+  }
+}

@@ -22,12 +22,6 @@ var upload = multer({
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
       cb(null, `media_${uuidv4()}`)
-    },
-    fileFilter: (req, file, cb) => {
-      if (file.mimetype !== "image/jpeg" || file.mimetype !== "video/mp4") {
-        cb(null, false)
-      }
-      cb(null, true)
     }
   })
 })

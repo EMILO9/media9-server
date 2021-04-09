@@ -62,7 +62,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
             owner: authData.email
           })
           .then(r => {
-            res.send(r)
+            res.send(r.ops[0])
           })
         }
       })

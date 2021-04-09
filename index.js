@@ -125,6 +125,21 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
      ).then(r => res.send(r))
     })
 
+    app.delete("/deleteMedia/:id", customModules.verifyToken, (req, res) => {
+      jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
+        if (err) res.send('No access token set')
+        else {
+          pcs.findOne({owner: authData.email, _id: objectID(req.params.id)})
+          .then(r => {
+            if (!r) res.send("You don't have access to that PC.")
+            else {
+              res.send(authData)
+            }
+          })
+        }
+      })
+    })
+
   })
   
 app.listen(process.env.PORT)

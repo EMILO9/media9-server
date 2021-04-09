@@ -23,7 +23,12 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
           let emailCheck = validator.isEmail(email)
           let passwordCheck = validator.isLength(password, {min: 5, max: 20})
           if (!emailCheck || !passwordCheck) res.send({emailCheck, passwordCheck})
-          else res.status(200).send("Inserting document in MongoDB...")
+          else {
+            bcrypt.hash(password, 8, (err, hash) => {
+              users.insertOne({email: email, password: hash})
+              .then(r => res.send(r))
+            })
+          }
         }
       })
     })

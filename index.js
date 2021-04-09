@@ -16,8 +16,8 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 
     app.post("/register", (req, res) => {
       let {email, password} = req.body
-      body('email').isEmail(),
-      body('password').isLength({ min: 5 }),
+      body(email).isEmail(),
+      body(password).isLength({ min: 5 }),
       (req, res) => {
         const errors = validationResult(req);
         res.send({ errors: errors.array() })

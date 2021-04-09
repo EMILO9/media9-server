@@ -26,7 +26,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
           else {
             bcrypt.hash(password, 8, (err, hash) => {
               users.insertOne({email: email, password: hash})
-              .then(r => res.send(r))
+              .then(r => res.send(r.ops[0]))
             })
           }
         }

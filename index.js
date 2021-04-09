@@ -32,6 +32,23 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
         }
       })
     })
+
+    app.post("/login", (req, res) => {
+      let {email, password} = req.body
+      users.findOne({email})
+      .then(r => {
+        if (!r) res.send("Email doesnt exist")
+        else bcrypt.compare(password, r.password, (err, result) => {
+          if (!result) res.send("Wrong password")
+          else {
+            let user = {_id: r._id, email: r.email}
+            jwt.sign(user, process.env.SECRET_KEY, (err, token) => {
+              res.send({token, user})
+            })
+          }
+        })
+      })
+    })
   
   })
   

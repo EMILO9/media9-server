@@ -78,7 +78,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
             else {
               pcs.deleteOne({_id: objectID(req.params.id)})
               .then(r => {
-                res.send(r.ops[0])
+                res.send(r)
               })
             }
           })

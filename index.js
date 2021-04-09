@@ -28,6 +28,7 @@ var upload = multer({
 const customModules = require('./customModules')
 
 app.use(express.json())
+app.use(cors())
 
 mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 .then((client) => {

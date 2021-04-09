@@ -100,6 +100,12 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
               pcs.deleteOne({_id: objectID(req.params.id)})
               .then(r => {
                 res.send(r)
+                r.media.map(m => {
+                  let params = {Bucket: process.env.BUCKET, Key: m.key}
+                  s3.deleteObject(params, (err, data) => {
+                    if (err) res.status(400).send(err)
+                    });
+                })
               })
             }
           })

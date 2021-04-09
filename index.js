@@ -98,7 +98,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
               let nameCheck = validator.isLength(name, {min: 5, max: 40})
               if (!nameCheck) res.send({nameCheck})
               else {
-                pcs.replaceOne({_id: objectID(_id)}, {name, media})
+                pcs.replaceOne({_id: objectID(_id)}, {name, media, owner: authData.email})
                 .then(r => {
                   res.send(r)
                 })

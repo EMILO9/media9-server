@@ -20,8 +20,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       body('password').isLength({ min: 5 }),
       (req, res) => {
         const errors = validationResult(req);
-        if (!errors.isEmpty()) res.send({ errors: errors.array() })
-        res.send({email, password})
+        res.send({ errors: errors.array() })
        }
     })
   })

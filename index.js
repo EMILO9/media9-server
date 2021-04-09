@@ -71,7 +71,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       })
     })
 
-    app.get("/addPc", customModules.verifyToken, (req, res) => {
+    app.post("/addPc", customModules.verifyToken, (req, res) => {
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
         if (err) res.send('No access token set')
         else {

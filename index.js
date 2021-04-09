@@ -54,7 +54,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 
     app.get("/addPc", customModules.verifyToken, (req, res) => {
       jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
-        if (err) res.status(403).send('No access token set')
+        if (err) res.send('No access token set')
         else {
           pcs.insertOne({
             name: `pc_${uuidv4()}`,
@@ -64,6 +64,15 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
           .then(r => {
             res.send(r.ops[0])
           })
+        }
+      })
+    })
+
+    app.delete("/deletePc/:id", customModules.verifyToken, (req, res) => {
+      jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
+        if (err) res.send('No access token set')
+        else {
+          res.send(req.params.id)
         }
       })
     })

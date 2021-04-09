@@ -75,7 +75,12 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
           pcs.findOne({owner: authData.email, _id: objectID(req.params.id)})
           .then(r => {
             if (!r) res.send("You dont have access to that PC")
-            else res.send(r)
+            else {
+              pcs.deleteOne({_id: objectID(req.params.id)})
+              .then(r => {
+                res.send(r.ops[0])
+              })
+            }
           })
         }
       })

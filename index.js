@@ -13,11 +13,9 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
     const db = client.db("db");
     const users = db.collection("users");
 
-    app.get("/", (req, res) => {
-      users.find({}).toArray().then(r => {
-        if (!r) res.send("No users exists yet")
-        else res.send(r)
-      })
+    app.get("/register", (req, res) => {
+      let {email, password} = req.body
+      res.send({email, password})
     })
   })
   

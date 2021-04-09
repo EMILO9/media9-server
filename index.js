@@ -21,7 +21,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
       (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) res.send({ errors: errors.array() })
-        else res.send({email, password})
+        res.send({email, password})
        }
     })
   })

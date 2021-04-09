@@ -14,7 +14,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
     const db = client.db("db")
     const users = db.collection("users")
 
-    app.get("/register", (req, res) => {
+    app.post("/register", (req, res) => {
       let {email, password} = req.body
       body('email').isEmail(),
       body('password').isLength({ min: 5 }),

@@ -1,3 +1,6 @@
+const objectID = require('mongodb').ObjectID
+const jwt = require('jsonwebtoken')
+
 const customModules = {
     verifyToken: (req, res, next) => {
         const bearerHeader = req.headers['authorization']

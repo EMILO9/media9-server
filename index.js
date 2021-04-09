@@ -11,6 +11,13 @@ var multer = require('multer');
 var multerS3 = require('multer-s3')
 let s3 = new AWS.S3({accessKeyId: process.env.ACCESS_KEY_ID, secretAccessKey: process.env.SECRET_ACCESS_KEY, Bucket: process.env.BUCKET})
 var upload = multer({
+  fileFilter: (req, res, file, cb) => {
+    if (file.mimetype !== "image/jpeg" || file.mimetype !== "video/mp4") {
+      cb(null, false)
+      res.send("File types allowed: [image/jpeg, video/mp4]")
+    }
+    else cb(null, true)
+  },
   limits: {
     files: 1,
     fileSize: 50 * 1024 * 1024

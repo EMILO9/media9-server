@@ -5,7 +5,7 @@ const objectID = require('mongodb').ObjectID
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
-const { body, validationResult } = require('express-validator')
+const validator = require('validator');
 
 app.use(express.json())
 
@@ -16,13 +16,11 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
 
     app.post("/register", (req, res) => {
       let {email, password} = req.body
-      body(email).isEmail(),
-      body(password).isLength({ min: 5 }),
-      (req, res) => {
-        const errors = validationResult(req);
-        res.send({ errors: errors.array() })
-       }
+      let emailCheck = validator.isEmail(email)
+      let passwordCheck = validator.isLength(password, {min: 5, max: 20})
+      res.send(emailCheck, passwordCheck)
     })
+  
   })
   
 app.listen(process.env.PORT)

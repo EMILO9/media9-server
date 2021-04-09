@@ -116,7 +116,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
   
 app.listen(process.env.PORT)
 
-function validationBeforeUpload () {
+function validationBeforeUpload (req, res, next) {
   jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
     if (err) res.status(403).send('No access token set')
     else {

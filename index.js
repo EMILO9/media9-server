@@ -22,11 +22,8 @@ var upload = multer({
     acl: 'public-read',
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
-      jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => cb(null, `${authData.email}/media_${uuidv4()}`))
-    },
-    // key: function (req, file, cb) {
-    //   cb(null, `media_${uuidv4()}`)
-    // }
+      cb(null, `media_${uuidv4()}`)
+    }
   })
 })
 const customModules = require('./customModules')
@@ -142,12 +139,11 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
           .then(r => {
             if (!r) res.status(400).send("You don't have access to that PC.")
             else {
-              // Key: req.params.key
-              s3.deleteObject({Bucket: process.env.BUCKET, Key: `${authData.email}/${req.params.key}`}, function(err, data) {
+              s3.deleteObject({Bucket: process.env.BUCKET, Key: req.params.key}, function(err, data) {
                 if (err) res.status(400).send(err)
                 else {
                    pcs.updateOne({_id: objectID(req.params.id)},
-                   { $pull: { media: { key: `${authData.email}/${req.params.key}` } } }).then(r => {
+                   { $pull: { media: { key: req.params.key } } }).then(r => {
                      res.send(r)
                     })
                 }

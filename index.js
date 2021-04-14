@@ -147,7 +147,7 @@ mongoClient.connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
                 if (err) res.status(400).send(err)
                 else {
                    pcs.updateOne({_id: objectID(req.params.id)},
-                   { $pull: { media: { key: req.params.key } } }).then(r => {
+                   { $pull: { media: { key: `${authData.email}/${req.params.key}` } } }).then(r => {
                      res.send(r)
                     })
                 }

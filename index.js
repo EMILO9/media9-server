@@ -22,8 +22,11 @@ var upload = multer({
     acl: 'public-read',
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
-      cb(null, `media_${uuidv4()}`)
-    }
+      jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => cb(null, `${authData.email}/media_${uuidv4()}`))
+    },
+    // key: function (req, file, cb) {
+    //   cb(null, `media_${uuidv4()}`)
+    // }
   })
 })
 const customModules = require('./customModules')
